@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Dating.Data;
 using Dating.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dating.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ValuesController : ControllerBase
@@ -31,6 +33,7 @@ namespace Dating.Controllers
         }
 
         // GET: api/Values/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetValue(int id)
         {
