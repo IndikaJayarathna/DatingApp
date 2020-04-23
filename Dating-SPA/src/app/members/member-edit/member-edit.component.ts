@@ -12,9 +12,13 @@ import { AuthService } from 'src/app/_services/auth.service';
   styleUrls: ['./member-edit.component.css']
 })
 export class MemberEditComponent implements OnInit {
+
+  constructor(private route: ActivatedRoute, private alertify: AlertifyService,
+              private userService: UserService, private authService: AuthService) { }
   @ViewChild('editForm') editForm: NgForm; // use for form reset
   // use for prevent user closing browser tab
   user: User;
+  photoUrl: string;
   @HostListener('window: beforeunload', ['$event'])
   unloadNotification($event: any) {
     if (this.editForm.dirty) {
@@ -22,14 +26,12 @@ export class MemberEditComponent implements OnInit {
     }
   }
 
-  constructor(private route: ActivatedRoute, private alertify: AlertifyService,
-              private userService: UserService, private authService: AuthService) { }
-
   ngOnInit() {
     this.route.data.subscribe(data => {
       // tslint:disable-next-line:no-string-literal
       this.user = data['user'];
     });
+    this.authService.currentPhotoUrl.subscribe(photoUrl => this.photoUrl = photoUrl);
   }
 
   updateUser() {
@@ -40,6 +42,10 @@ export class MemberEditComponent implements OnInit {
     }, error => {
       this.alertify.error(error);
     });
+  }
+
+  updateMainPhoto(photourl) {
+    this.user.photoUrl = photourl;
   }
 
 }

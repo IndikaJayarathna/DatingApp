@@ -13,6 +13,8 @@ namespace Dating.Data
         Task<bool> SaveAll(); // return true = all changes were saved. false = there are more changes to be saved.
         Task<IEnumerable<User>> GetUsers(); //get all users
         Task<User> GetUser(int id); //get individual user from db
+        Task<Photo> GetPhoto(int id);
+        Task<Photo> GetMainPhotoForUser(int userId);
 
     }
 }

@@ -44,6 +44,7 @@ namespace Dating
                 opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
             services.AddCors();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(Startup));
             services.AddTransient<Seed>();
             services.AddScoped<IAuthRepository, AuthRepository>();
@@ -65,7 +66,7 @@ namespace Dating
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, Seed seeder)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {

@@ -1,4 +1,5 @@
-﻿using Dating.Data;
+﻿using AutoMapper;
+using Dating.Data;
 using Dating.Dtos;
 using Dating.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -22,10 +23,13 @@ namespace Dating.Controllers
 
         private readonly IConfiguration _config;
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        private readonly IMapper _mapper;
+
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
             _repo = repo;
             _config = config;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
@@ -78,9 +82,12 @@ namespace Dating.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
+            var user = _mapper.Map<UserForListsDto>(userFromRepo);
+
             return Ok(new
             {
-                token = tokenHandler.WriteToken(token)
+                token = tokenHandler.WriteToken(token),
+                user
             });
         }
 
