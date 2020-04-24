@@ -35,7 +35,7 @@ namespace Dating.Controllers
             return Ok(usersToReturn);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetUser")] // giving a name for route
         public async Task<IActionResult> GetUser(int id)
         {
             var user = await _repo.GetUser(id);
