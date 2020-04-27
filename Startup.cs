@@ -62,6 +62,7 @@ namespace Dating
 
                     };
                 });
+            services.AddScoped<LogUserActivity>();
            
         }
 
