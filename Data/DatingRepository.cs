@@ -1,4 +1,5 @@
-﻿using Dating.Models;
+﻿using Dating.Helpers;
+using Dating.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -41,16 +42,44 @@ namespace Dating.Data
         {
             var user = await _context.User.Include(p => p.Photos).FirstOrDefaultAsync(u => u.Id == id);
 
+
             return user;
         }
 
-        public async Task<IEnumerable<User>> GetUsers()
+        public async Task<PagedList<User>> GetUsers(UserParams userParams)
         {
-            var users = await _context.User.Include(p => p.Photos).ToListAsync();
+            var users = _context.User.Include(p => p.Photos).
+                OrderByDescending(u => u.LastActive).AsQueryable();
+            // start filtering
+            users = users.Where(u => u.Id != userParams.UserId); // filter the current user
 
-            return users;
+            users = users.Where(u => u.Gender == userParams.Gender); // filter gender of the user
+
+            if (userParams.MinAge != 18 || userParams.MaxAge != 99)
+            {
+                var minDob = DateTime.Today.AddYears(-userParams.MaxAge - 1);
+                var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
+
+                users = users.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
+            }
+            // end filtering
+            // orderby
+            if (!string.IsNullOrEmpty(userParams.OrderBy))
+            {
+                switch (userParams.OrderBy)
+                {
+                    case "created":
+                        users = users.OrderByDescending(u => u.Created);
+                        break;
+                    default:
+                        users = users.OrderByDescending(u => u.LastActive);
+                        break;
+                }
+            }
+
+
+            return await PagedList<User>.CreateAsync(users, userParams.PageNumber, userParams.PageSize);
         }
-
         public async Task<bool> SaveAll()
         {
             return await _context.SaveChangesAsync() > 0; //more than 0 results = true, 0 results = false

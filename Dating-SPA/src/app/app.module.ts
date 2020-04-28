@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, Pipe } from '@angular/core';
 import {HttpClientModule} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import { BsDropdownModule, TabsModule } from 'ngx-bootstrap';
+import { BsDropdownModule, TabsModule, PaginationModule, ButtonsModule } from 'ngx-bootstrap';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { RouterModule } from '@angular/router';
 import { JwtModule } from '@auth0/angular-jwt';
@@ -69,6 +69,8 @@ export function tokenGetter() {
       TimeagoModule.forRoot(),
       NgxGalleryModule,
       FileUploadModule,
+      PaginationModule.forRoot(),
+      ButtonsModule.forRoot(),
       JwtModule.forRoot({
          config: {
             tokenGetter,
