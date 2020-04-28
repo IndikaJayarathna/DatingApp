@@ -16,6 +16,7 @@ namespace Dating.Data
         Task<User> GetUser(int id); //get individual user from db
         Task<Photo> GetPhoto(int id);
         Task<Photo> GetMainPhotoForUser(int userId);
+        Task<Like> GetLike(int userId, int recipientId); // checking the like already exists
 
     }
 }
