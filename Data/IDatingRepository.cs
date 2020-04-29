@@ -17,6 +17,9 @@ namespace Dating.Data
         Task<Photo> GetPhoto(int id);
         Task<Photo> GetMainPhotoForUser(int userId);
         Task<Like> GetLike(int userId, int recipientId); // checking the like already exists
+        Task<Message> GetMessage(int id); // get the single message from the database
+        Task<PagedList<Message>> GetMessagesForUser(MessageParams messageParams); // Inbox, Outbox or Unread Messages
+        Task<IEnumerable<Message>> GetMessageThread(int userId, int recipientId); // conversation between two users
 
     }
 }
