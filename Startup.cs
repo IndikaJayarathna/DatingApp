@@ -38,7 +38,7 @@ namespace Dating
         {
             services.AddControllers();
             services.AddDbContext<DatingContext>(options =>
-                    options.UseSqlite(Configuration.GetConnectionString("DatingContext")));
+                    options.UseMySql(Configuration.GetConnectionString("DatingContext")));
             services.AddMvc().AddNewtonsoftJson(opt =>
             {
                 opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
@@ -65,9 +65,41 @@ namespace Dating
             services.AddScoped<LogUserActivity>();
            
         }
+         // Development
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            services.AddControllers();
+            services.AddDbContext<DatingContext>(options =>
+                    options.UseSqlite(Configuration.GetConnectionString("DatingContext")));
+            services.AddMvc().AddNewtonsoftJson(opt =>
+            {
+                opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+            services.AddCors();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+            services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<Seed>();
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IDatingRepository, DatingRepository>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
+                        .GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+
+                    };
+                });
+            services.AddScoped<LogUserActivity>();
+
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)// , Seed seeder)
         {
             if (env.IsDevelopment())
             {
@@ -90,7 +122,7 @@ namespace Dating
                 });
             }
 
-            //seeder.SeedUsers();
+            // seeder.SeedUsers();
 
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
@@ -101,9 +133,14 @@ namespace Dating
 
             app.UseAuthorization();
 
+            app.UseDefaultFiles();
+
+            app.UseStaticFiles();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapFallbackToController("Index", "Fallback");
             });
         }
     }
